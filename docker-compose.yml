@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes: 
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+
+  # -------------------------------------------------------
+  # OpenWeatherMap Exporter  — NUEVO
+  # -------------------------------------------------------
+  openweather-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.openweather
+    container_name: openweather-exporter
+    ports:
+      - "9877:9877"
+    environment:
+      - OWM_API_KEY=c4c584af5e82aa764b28e7c93bd4e11f
+      - OWM_CITY=Madrid                       # ciudad a monitorizar
+      - OWM_INTERVAL=60                       # segundos entre scrapes
+      - OWM_PORT=9877
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+ 
+volumes:
+  prometheus_data:
+  grafana_data:        

@@ -12,3 +12,7 @@ scrape_configs:
     scrape_interval: 60s          # no tiene sentido scrapearlo cada 15s
     static_configs:
       - targets: ["openweather-exporter:9877"]
+  - job_name: "stocks"
+    scrape_interval: 60s
+    static_configs:
+      - targets: ["stocks-exporter:9878"]

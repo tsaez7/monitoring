@@ -48,6 +48,19 @@ services:
     depends_on:
       - prometheus
  
+  # ── Stocks + Fear & Greed Exporter ──────────────────────────────────────
+  stocks-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile.stocks
+    container_name: stocks-exporter
+    ports:
+      - "9878:9878"
+    environment:
+      - STOCKS_INTERVAL=300    # scrape every 5 min (bolsa ~15min delay anyway)
+      - STOCKS_PORT=9878
+    restart: unless-stopped
+
 volumes:
   prometheus_data:
-  grafana_data:        
+  grafana_data:
